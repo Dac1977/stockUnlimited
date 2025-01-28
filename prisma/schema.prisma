@@ -1,0 +1,485 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model balanzas {
+  id_balanza  Int     @id @default(autoincrement()) @db.UnsignedInt
+  tag         String  @db.VarChar(255)
+  model       String  @db.VarChar(30)
+  peso_actual Decimal @db.Decimal(10, 2)
+}
+
+model cashflow {
+  id_movimiento  Int            @id @default(autoincrement()) @db.UnsignedInt
+  id_empresa     Int            @db.UnsignedInt
+  id_negocio     Int            @db.UnsignedInt
+  id_usuario     Int            @db.UnsignedInt
+  id_centrocosto Int            @db.UnsignedInt
+  fecha_carga    DateTime       @default(now()) @db.Date
+  fecha_vto      DateTime       @db.Date
+  fecha_pago     DateTime       @db.Date
+  tipo           cashflow_tipo
+  comprobante    Int            @db.UnsignedInt
+  signo          cashflow_signo
+  importe        Float
+  detalle        String         @db.VarChar(50)
+  id_pago        Int            @db.UnsignedInt
+  observacion    String         @db.VarChar(255)
+
+  @@index([id_centrocosto, id_negocio, id_pago, id_usuario], map: "id_centrocosto")
+  @@index([id_empresa], map: "id_empresa")
+}
+
+model centrocostos {
+  id_centrocosto Int    @id @default(autoincrement()) @db.UnsignedInt
+  id_empresa     Int    @db.UnsignedInt
+  centrocosto    String @db.VarChar(30)
+
+  @@index([id_empresa], map: "id_empresa")
+}
+
+model clientes {
+  id_cliente Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio Int     @db.UnsignedInt
+  usuario    String  @db.VarChar(30)
+  password   String  @db.VarChar(30)
+  correo     String? @db.VarChar(50)
+  telefono   String? @db.MediumText
+  cuil       BigInt? @db.UnsignedBigInt
+  ctacte     Boolean @default(false)
+  acosto     Boolean @default(false)
+  descuento  Decimal @default(0.00) @db.Decimal(5, 2)
+  pin        Int?    @db.UnsignedTinyInt
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model compras {
+  id_comprobante    BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  comprobante       Int       @db.UnsignedInt
+  id_proveedor      Int       @db.UnsignedInt
+  id_usuario        Int       @db.UnsignedInt
+  id_deposito       Int       @db.UnsignedInt
+  id_negocio        Int       @db.UnsignedInt
+  id_pago           Int       @db.UnsignedInt
+  id_transaccion    Int?
+  fecha_comprobante DateTime? @db.DateTime(0)
+  fecha_carga       DateTime  @default(now()) @db.DateTime(0)
+  fecha_pago        DateTime? @db.DateTime(0)
+  costo_total       Decimal   @db.Decimal(8, 2)
+  venta_total       Decimal   @db.Decimal(8, 2)
+  estado            String    @default("1") @db.VarChar(1)
+  impuesto1         Decimal   @db.Decimal(8, 2)
+  impuesto2         Decimal   @db.Decimal(8, 2)
+
+  @@index([comprobante], map: "comprobante")
+  @@index([id_deposito, id_negocio], map: "id_deposito")
+  @@index([id_pago], map: "id_pago")
+  @@index([id_proveedor], map: "id_proveedor")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model compras_renglones {
+  id_renglon     Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_comprobante Int     @db.UnsignedInt
+  id_producto    Int     @db.UnsignedInt
+  cantidad       Decimal @db.Decimal(8, 2)
+  px_costo       Decimal @db.Decimal(8, 2)
+  px_venta       Decimal @db.Decimal(8, 2)
+
+  @@index([id_comprobante], map: "id_comprobante")
+  @@index([id_producto], map: "id_producto")
+}
+
+model conciliaciones {
+  id_conciliacion Int      @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio      Int      @db.UnsignedInt
+  fecha           DateTime @db.Date
+  bloquear        Boolean  @default(true)
+  efectivo_sist   Decimal  @db.Decimal(10, 2)
+  efectivo_caja   Decimal  @db.Decimal(10, 2)
+  observacion     String   @db.VarChar(255)
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+model cuentas {
+  id_cuenta                        Int                                      @id @default(autoincrement()) @db.UnsignedInt
+  usuario                          String                                   @db.VarChar(30)
+  correo                           String                                   @db.VarChar(30)
+  password                         String                                   @db.VarChar(30)
+  cant_empresas                    Int                                      @default(1) @db.UnsignedTinyInt
+  cant_negocios                    Int                                      @default(1) @db.UnsignedTinyInt
+  cant_puestos                     Int                                      @default(1) @db.UnsignedTinyInt
+  cant_usuarios                    Int                                      @default(2) @db.UnsignedTinyInt
+  historial_comprobantes           cuentas_historial_comprobantes           @default(semestral)
+  historial_comprobantes_renglones cuentas_historial_comprobantes_renglones @default(trimestral)
+  reportes_unificados              Boolean                                  @default(false)
+  audit_ia                         Boolean                                  @default(false)
+  ctasctes                         Boolean                                  @default(false)
+  cashflow                         Boolean                                  @default(false)
+  balanzas                         Boolean                                  @default(false)
+  empresas                         empresas[]
+}
+
+model depositos {
+  id_deposito    Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio     Int     @db.UnsignedInt
+  deposito       String  @db.VarChar(30)
+  stock_negativo Boolean @default(true)
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model empresas {
+  id_empresa         Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_cuenta          Int     @db.UnsignedInt
+  empresa            String  @db.VarChar(30)
+  unificar_productos Boolean @default(false)
+  unificar_clientes  Boolean @default(false)
+  id_negocio_default Int     @default(0) @db.UnsignedInt
+  cuentas            cuentas @relation(fields: [id_cuenta], references: [id_cuenta], onUpdate: Restrict, map: "empresas_ibfk_1")
+
+  @@index([id_cuenta], map: "id_cuenta")
+  @@index([id_negocio_default], map: "id_negocio_default")
+}
+
+model impresoras {
+  id_impresora Int    @id @default(autoincrement()) @db.UnsignedInt
+  id_puesto    Int    @db.UnsignedInt
+  impresora    String @db.VarChar(20)
+  direccion    String @db.VarChar(30)
+  copias       Int    @default(1) @db.TinyInt
+
+  @@index([id_puesto], map: "id_puesto")
+}
+
+model negocios {
+  id_negocio Int               @id @default(autoincrement()) @db.UnsignedInt
+  id_empresa Int               @db.UnsignedInt
+  negocio    String            @db.VarChar(30)
+  gps        String            @db.VarChar(37)
+  redondeo   negocios_redondeo @default(entero)
+
+  @@index([id_empresa], map: "id_empresa")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pagos {
+  id_pago         Int               @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio      Int               @db.UnsignedInt
+  medio           String            @db.VarChar(30)
+  turnos_desgloce turnos_desgloce[]
+  turnos_entregas turnos_entregas[]
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+model productos {
+  id_producto         Int       @id @default(autoincrement()) @db.UnsignedInt
+  codigo              BigInt    @db.UnsignedBigInt
+  producto            String    @db.VarChar(30)
+  codigo_presentacion BigInt    @db.UnsignedBigInt
+  id_rubros           String    @db.VarChar(30)
+  id_proveedores      String    @db.VarChar(30)
+  margen              Decimal?  @db.Decimal(5, 2)
+  margen_forzar       Boolean   @default(false)
+  px_costo            Decimal?  @db.Decimal(10, 2)
+  px_venta            Decimal?  @db.Decimal(10, 2)
+  fecha_rotacion      DateTime? @db.Date
+  fecha_update        DateTime  @default(now()) @db.Timestamp(0)
+  mostrar             Boolean   @default(true)
+  control_stock       Boolean   @default(true)
+  comprar             Boolean   @default(true)
+  lista_rapida        Boolean   @default(false)
+  acepta_desc         Boolean   @default(true)
+  acepta_ctacte       Boolean   @default(true)
+  tags                String    @db.VarChar(256)
+  ranking             Int?      @db.UnsignedTinyInt
+  activo              Boolean   @default(true)
+  id_negocio          Int       @db.UnsignedInt
+
+  @@index([codigo], map: "codigo")
+  @@index([codigo_presentacion], map: "codigo_presentacion")
+  @@index([id_negocio], map: "id_negocio")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productos_combos {
+  id_renglon        Int @id @default(autoincrement())
+  id_producto_combo Int @default(0) @db.UnsignedInt
+  id_producto       Int @db.UnsignedInt
+  cantidad          Int @default(1) @db.UnsignedTinyInt
+
+  @@index([id_producto], map: "id_producto")
+  @@index([id_producto_combo], map: "id_producto_combo")
+}
+
+model productos_diferencial {
+  id                   Int      @id @default(autoincrement()) @db.UnsignedInt
+  id_producto          Int      @db.UnsignedInt
+  hora_desde           DateTime @db.Time(0)
+  hora_hasta           DateTime @db.Time(0)
+  px_diferencial_valor Decimal  @db.Decimal(8, 2)
+  px_diferencial_porc  Decimal  @db.Decimal(5, 2)
+
+  @@index([id_producto], map: "id_producto")
+}
+
+model productos_model {
+  id_producto         Int                          @id @default(autoincrement()) @db.UnsignedInt
+  codigo              BigInt                       @db.UnsignedBigInt
+  producto            String                       @db.VarChar(30)
+  presentacion        productos_model_presentacion @default(unidad)
+  cantidad            Int                          @default(1) @db.UnsignedTinyInt
+  peso_unitario       Decimal                      @db.Decimal(8, 2)
+  codigo_presentacion BigInt                       @db.UnsignedBigInt
+  foto                Bytes                        @db.Blob
+  id_rubros           String                       @db.VarChar(30)
+  id_proveedores      String                       @db.VarChar(30)
+
+  @@index([codigo], map: "codigo")
+  @@index([codigo_presentacion], map: "codigo_presentacion")
+}
+
+model productos_pack {
+  id            Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_producto   Int     @db.UnsignedInt
+  cantidad_min  Int     @db.UnsignedInt
+  px_pack_valor Decimal @db.Decimal(8, 2)
+  px_pack_porc  Decimal @db.Decimal(5, 2)
+
+  @@index([id_producto], map: "id_producto")
+}
+
+model productos_prohibir {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  id_producto Int      @db.UnsignedInt
+  hora_desde  DateTime @db.Time(0)
+  hora_hasta  DateTime @db.Time(0)
+
+  @@index([id_producto], map: "id_producto")
+}
+
+model proveedores {
+  id_proveedor     Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio       Int     @db.UnsignedInt
+  proveedor        String  @db.VarChar(30)
+  cuil             BigInt  @db.UnsignedBigInt
+  contacto         String  @db.VarChar(30)
+  telefono         String  @db.VarChar(30)
+  correo           String  @db.VarChar(50)
+  pedidos_mail     Boolean @default(false)
+  pedidos_telefono Boolean @default(false)
+  control_stock    Boolean @default(true)
+  dias_preventista String
+  dias_entrega     String
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model puestos {
+  id_puesto     Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio    Int     @db.UnsignedInt
+  id_deposito   Int     @db.UnsignedInt
+  puesto        String  @db.VarChar(20)
+  ip            String  @db.VarChar(15)
+  activo        Boolean @default(true)
+  pos           Boolean @default(true)
+  id_impresoras String? @db.VarChar(30)
+  id_balanza    Int     @db.UnsignedInt
+
+  @@index([id_deposito], map: "id_deposito")
+  @@index([id_negocio], map: "id_negocio")
+}
+
+model rubros {
+  id_rubro   Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_negocio Int     @db.UnsignedInt
+  rubro      String  @db.VarChar(30)
+  margen     Decimal @default(0.00) @db.Decimal(5, 2)
+
+  @@index([id_negocio], map: "id_negocio")
+}
+
+model stock {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  id_producto  Int      @db.UnsignedInt
+  id_negocio   Int      @db.UnsignedInt
+  id_deposito  Int      @db.UnsignedInt
+  stock        Int      @default(0)
+  fecha_arqueo DateTime @db.DateTime(0)
+
+  @@index([id_deposito], map: "id_deposito")
+  @@index([id_negocio], map: "id_negocio")
+  @@index([id_producto], map: "id_producto")
+}
+
+model stock_ideal {
+  id          Int @id @default(autoincrement()) @db.UnsignedInt
+  id_producto Int @db.UnsignedInt
+  id_negocio  Int @db.UnsignedInt
+  id_deposito Int @db.UnsignedInt
+  stock       Int @default(0) @db.UnsignedInt
+
+  @@index([id_deposito], map: "id_deposito")
+  @@index([id_negocio], map: "id_negocio")
+  @@index([id_producto], map: "id_producto")
+}
+
+model transferencias {
+  id_transferencia  Int      @id @default(autoincrement()) @db.UnsignedInt
+  fecha             DateTime @db.DateTime(0)
+  id_deposito_desde Int      @db.UnsignedInt
+  id_deposito_hacia Int      @db.UnsignedInt
+  costo_total       Decimal  @db.Decimal(8, 2)
+  venta_total       Decimal  @db.Decimal(8, 2)
+}
+
+model transferencias_renglones {
+  id_renglon       Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_transferencia Int     @db.UnsignedInt
+  id_producto      Int     @db.UnsignedInt
+  cantidad         Decimal @db.Decimal(8, 2)
+  px_costo         Decimal @db.Decimal(10, 2)
+  px_venta         Decimal @db.Decimal(10, 2)
+}
+
+model turnos {
+  id_turno            Int       @id @default(autoincrement()) @db.UnsignedInt
+  turno               Int       @db.UnsignedInt
+  id_usuario          Int       @db.UnsignedInt
+  id_puesto           Int       @db.UnsignedInt
+  id_negocio          Int       @db.UnsignedInt
+  id_deposito         Int       @db.UnsignedInt
+  fecha_desde         DateTime  @default(now()) @db.DateTime(0)
+  fecha_hasta         DateTime? @db.DateTime(0)
+  estado              String    @default("abierto")
+  costos_totales      Decimal?  @db.Decimal(12, 2)
+  ventas_totales      Decimal?  @db.Decimal(12, 2)
+  count_esc           Int?      @db.UnsignedTinyInt
+  count_balanza_error Int?      @db.UnsignedTinyInt
+
+  @@index([id_deposito], map: "id_deposito")
+  @@index([id_negocio], map: "id_negocio")
+  @@index([id_puesto], map: "idx_id_puesto")
+  @@index([id_usuario], map: "idx_id_usuario")
+}
+
+model turnos_desgloce {
+  id_desgloce Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_turno    Int     @db.UnsignedInt
+  id_pago     Int     @db.UnsignedInt
+  monto       Decimal @db.Decimal(8, 2)
+  pagos       pagos   @relation(fields: [id_pago], references: [id_pago], onUpdate: Restrict, map: "turnos_desgloce_ibfk_1")
+
+  @@index([id_pago], map: "id_pago")
+  @@index([id_turno], map: "id_turno")
+}
+
+model turnos_entregas {
+  id_entrega Int      @id @default(autoincrement()) @db.UnsignedInt
+  id_turno   Int      @db.UnsignedInt
+  id_pago    Int      @db.UnsignedInt
+  fecha      DateTime @default(now()) @db.DateTime(0)
+  monto      Decimal  @db.Decimal(8, 2)
+  pagos      pagos    @relation(fields: [id_pago], references: [id_pago], onUpdate: Restrict, map: "turnos_entregas_ibfk_1")
+
+  @@index([id_pago], map: "id_pago")
+  @@index([id_turno, id_pago], map: "id_turno")
+}
+
+model usuarios {
+  id_usuario Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_cuenta  Int     @db.UnsignedInt
+  usuario    String  @db.VarChar(30)
+  correo     String? @db.VarChar(50)
+  cuil       Int     @db.UnsignedInt
+  password   String  @db.VarChar(20)
+  permisos   String  @default("id_puestos:0;acceso_libre:1") @db.Text
+  activo     Boolean @default(true)
+
+  @@index([id_cuenta], map: "id_cuenta")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ventas {
+  id_comprobante  BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  id_turno        Int      @db.UnsignedInt
+  id_negocio      Int      @db.UnsignedInt
+  id_cliente      Int      @db.UnsignedInt
+  id_pago         Int      @db.UnsignedInt
+  id_transaccion  Int?
+  fecha           DateTime @default(now()) @db.DateTime(0)
+  costo_total     Decimal  @db.Decimal(8, 2)
+  venta_total     Decimal  @db.Decimal(8, 2)
+  estado          String   @default("1") @db.VarChar(1)
+  variacion_venta Decimal  @db.Decimal(8, 2)
+  variacion_peso  Decimal  @db.Decimal(8, 2)
+
+  @@index([id_negocio, id_cliente], map: "id_deposito")
+  @@index([id_pago], map: "id_pago")
+  @@index([id_turno], map: "id_turno")
+}
+
+model ventas_renglones {
+  id_renglon     Int     @id @default(autoincrement()) @db.UnsignedInt
+  id_comprobante BigInt  @db.UnsignedBigInt
+  id_producto    Int     @db.UnsignedInt
+  cantidad       Decimal @db.Decimal(8, 2)
+  px_costo       Decimal @db.Decimal(8, 2)
+  px_venta       Decimal @db.Decimal(8, 2)
+
+  @@index([id_comprobante], map: "id_comprobante")
+  @@index([id_producto], map: "id_producto")
+}
+
+enum productos_model_presentacion {
+  unidad
+  pack
+  caja
+  cajon
+}
+
+enum negocios_redondeo {
+  sin_redondear @map("sin redondear")
+  entero
+  // 5 @map("5")
+  // 10 @map("10")
+  // 100 @map("100")
+}
+
+enum cuentas_historial_comprobantes {
+  trimestral
+  semestral
+  anual
+  perpetuo
+}
+
+enum cashflow_tipo {
+  A
+  B
+  C
+  X
+  IMP
+}
+
+enum cuentas_historial_comprobantes_renglones {
+  trimestral
+  semestral
+  anual
+  perpetuo
+}
+
+enum cashflow_signo {
+  I
+  E
+}
