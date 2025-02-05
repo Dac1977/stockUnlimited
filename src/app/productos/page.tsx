@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Producto, Columns } from "./colums";
+import { Producto, columns } from "./colums";
 import { DataTable } from "./data-table";
 const ProductosPage: React.FC = () => {
   const [productos, setProductos] = useState<Producto[] | null>(null);
@@ -31,7 +31,7 @@ const ProductosPage: React.FC = () => {
     <div>
       <h1 className="text-center">Productos</h1>
       {/* Renderiza los productos aquí */}
-      <DataTable columns={Columns} data={productos || []} />
+      <DataTable columns={columns} data={productos || []} />
     </div>
   );
 };

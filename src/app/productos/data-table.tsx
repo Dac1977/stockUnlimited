@@ -2,7 +2,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-// import { DataTableToolbarDetailReport } from "../productos/data-table-toolbar-detail-report"
+import { DataTableToolbar } from "./data-table-toolbar"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -21,7 +21,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Columns } from "./colums"
+import { columns } from "./colums"
 import {
   Table,
   TableBody,
@@ -31,12 +31,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { any } from "zod"
+import { DataTablePagination } from "./data-table-pagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData>[]
   data: TData[]
 }
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Record<string, any>, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -69,15 +70,8 @@ export function DataTable<TData, TValue>({
   return (
     <div className="p-4">
       <div className="rounded-md border">
-        {/* <DataTableToolbarDetailReport
-          table={table}
-          columns={columns.map((column) => ({
-        id: column.id ?? '',
-        title: column.header as string,
-        icon: null, // or provide the appropriate icon if available
-          }))}
-        /> */}
-        <div className="flex items-center p-4">
+        <DataTableToolbar table={table} data={data} />
+        {/* <div className="flex items-center p-4">
           <Input
         placeholder="Filtrar por Producto..."
         value={(table.getColumn("producto")?.getFilterValue() as string) ?? ""}
@@ -110,7 +104,7 @@ export function DataTable<TData, TValue>({
             })}
         </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </div> */}
         <div>
           <Table>
         <TableHeader>
@@ -148,7 +142,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
           </Table>
-          <div className="flex items-center justify-between space-x-2 py-4 p-2">
+        {/* <div className="flex items-center justify-between space-x-2 py-4 p-2">
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -199,7 +193,10 @@ export function DataTable<TData, TValue>({
             ))}
           </select>
         </div>
-          </div>
+          </div> */}
+        </div>
+        <div>
+          <DataTablePagination table={table} />
         </div>
       </div>
     </div>
