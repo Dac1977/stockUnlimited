@@ -30,11 +30,11 @@ const Sidebar = () => {
             {isCollapsed ? <IoMdAddCircleOutline size={30} /> : 'Crear Producto'}
           </Link>
         </li>
-        <li className="mb-2 flex justify-start">
+        {/* <li className="mb-2 flex justify-start">
           <Link href="/productos/editar" className={`text-gray-300 hover:text-white ${pathname === '/productos/editar' ? 'font-bold text-white' : ''}`} title="Editar Producto">
             {isCollapsed ? <MdEdit size={30} /> : 'Editar Producto'}
           </Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );

@@ -46,16 +46,24 @@ export const columns: ColumnDef<Producto>[] = [
                             
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={async () => {
-                                const response = await fetch(`/api/productos`, {
-                                    method: 'DELETE',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({ id_producto: productos.id_producto }),
-                                });
-                                if (response.ok) {
-                                    window.location.reload();
+                            onClick={() => {
+                                const confirmDelete = window.confirm(`¿Estás seguro de eliminar el producto con ID ${productos.id_producto}?`);
+                                if (confirmDelete) {
+                                    fetch(`/api/productos`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({ id_producto: productos.id_producto }),
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                window.location.reload();
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error al eliminar el producto:', error);
+                                        });
                                 }
                             }}
                         >

@@ -44,7 +44,11 @@ export function DataTable<TData extends Record<string, any>, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [pageSize, setPageSize] = React.useState(10)
+  // const [pageSize, setPageSize] = React.useState(10)
+  const [{ pageIndex, pageSize }, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const table = useReactTable({
     data,
@@ -56,16 +60,14 @@ export function DataTable<TData extends Record<string, any>, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination, // ✅ Maneja cambios de paginación
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      pagination: {
-        pageIndex: 0,
-        pageSize,
-      },
+      pagination: { pageIndex, pageSize }, // ✅ Usa el estado actualizado
     },
-  })
+  });
   console.log(columns)
   return (
     <div className="p-4">
