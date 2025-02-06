@@ -5,13 +5,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   switch (req.method) {
     case 'GET':
       try {
-        const productos = await prisma.productos.findMany();
-        const productosWithStringBigInt = productos.map(producto => ({
-          ...producto,
-          codigo: producto.codigo.toString(),
-          codigo_presentacion: producto.codigo_presentacion.toString(),
-        }));
-        res.status(200).json(productosWithStringBigInt);
+        const { id_producto } = req.query;
+        if (id_producto) {
+          const producto = await prisma.productos.findUnique({
+            where: { id_producto: Number(id_producto) },
+          });
+          if (producto) {
+            const productoWithStringBigInt = {
+              ...producto,
+              codigo: producto.codigo.toString(),
+              codigo_presentacion: producto.codigo_presentacion.toString(),
+            };
+            res.status(200).json(productoWithStringBigInt);
+          } else {
+            res.status(404).json({ error: 'Product not found' });
+          }
+        } else {
+          const productos = await prisma.productos.findMany();
+          const productosWithStringBigInt = productos.map(producto => ({
+            ...producto,
+            codigo: producto.codigo.toString(),
+            codigo_presentacion: producto.codigo_presentacion.toString(),
+          }));
+          res.status(200).json(productosWithStringBigInt);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).json({ error: 'Error fetching products' });

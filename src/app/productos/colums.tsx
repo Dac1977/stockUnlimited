@@ -13,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DataTableColumnHeader } from "@/app/productos/data-table-column-header"
+import Link from "next/link"
 export type Producto = Prisma.productosGetPayload<{}>
 
 export const columns: ColumnDef<Producto>[] = [
@@ -31,21 +32,42 @@ export const columns: ColumnDef<Producto>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Codigo</DropdownMenuLabel>
+                        {/* <DropdownMenuLabel>Codigo</DropdownMenuLabel> */}
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(productos.codigo.toString())}
+                            onClick={() => navigator.clipboard.writeText(productos.id_producto.toString())}
                         >
                             Copy ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Ver producto</DropdownMenuItem>
-                        <DropdownMenuItem>Ver detalle</DropdownMenuItem>
+                        <DropdownMenuItem >
+                            <Link href={`/productos/action/?id_producto=${productos.id_producto}`}>
+                            Editar
+                            </Link>
+                            
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={async () => {
+                                const response = await fetch(`/api/productos`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ id_producto: productos.id_producto }),
+                                });
+                                if (response.ok) {
+                                    window.location.reload();
+                                }
+                            }}
+                        >
+                            Eliminar
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
         },
         },
         {
+        id: "codigo",    
         accessorKey: "codigo",
         header: "Código",
         },
@@ -82,6 +104,7 @@ export const columns: ColumnDef<Producto>[] = [
         
     },
     {
+        id: "codigo_presentacion",
         accessorKey: "codigo_presentacion",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="codigo_presentacion" />
@@ -90,15 +113,25 @@ export const columns: ColumnDef<Producto>[] = [
             const codigo_presentacion = row.getValue("codigo_presentacion") as string
             return <div className="text-center font-medium">{codigo_presentacion}</div>
         },
-        
+        filterFn: (row, columnId, filterValue) => {
+            const cellValue = row.getValue(columnId);
+            return filterValue.includes(cellValue as string);
+        },
     },
     {
+        id: "id_rubros",
         accessorKey: "id_rubros",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="ID Rubros" />
         ),
+        
+        filterFn: (row, columnId, filterValue) => {
+            const cellValue = row.getValue(columnId);
+            return filterValue.includes(cellValue as string);
+        },
     },
     {
+        id: "id_proveedores",
         accessorKey: "id_proveedores",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="ID Proveedores" />
@@ -107,9 +140,14 @@ export const columns: ColumnDef<Producto>[] = [
             const id_proveedores = row.getValue("id_proveedores") as string
             return <div className="text-center font-medium">{id_proveedores}</div>
         },
+        filterFn: (row, columnId, filterValue) => {
+            const cellValue = row.getValue(columnId);
+            return filterValue.includes(cellValue as string);
+        },
         
     },
     {
+        id: "margen",
         accessorKey: "margen",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Margen" />
@@ -120,6 +158,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "margen_forzar",
         accessorKey: "margen_forzar",
         header :({column}) =>(
             <DataTableColumnHeader column={column} title="Margen Forzar" />
@@ -131,6 +170,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "px_costo",
         accessorKey: "px_costo",
         header: ({column}) =>(
             <DataTableColumnHeader column={column} title="Precio Costo" />  
@@ -146,6 +186,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "px_venta",
         accessorKey: "px_venta",
         header: ({column}) =>(
             <DataTableColumnHeader column={column} title="Precio Venta" />
@@ -161,6 +202,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "fecha_rotacion",
         accessorKey: "fecha_rotacion",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Fecha Rotación" />),
         cell: ({ row }) => {
@@ -172,6 +214,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "fecha_update",
         accessorKey: "fecha_update",
         header: ({column}) =>(
             <DataTableColumnHeader column={column} title="Fecha Update" />
@@ -188,6 +231,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "mostrar",
         accessorKey: "mostrar",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Mostrar" />),
         cell: ({ row }) => {
@@ -196,6 +240,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "control_stock",
         accessorKey: "control_stock",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Control Stock" />),
         cell: ({ row }) => {
@@ -204,6 +249,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "comprar",
         accessorKey: "comprar",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Comprar" />),
         cell: ({ row }) => {
@@ -212,6 +258,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "lista_rapida",
         accessorKey: "lista_rapida",
         header:({column}) =>(<DataTableColumnHeader column={column} title="Lista Rápida" />),
         cell: ({ row }) => {
@@ -220,6 +267,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "acepta_desc",
         accessorKey: "acepta_desc",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Acepta Descuento" />),
         cell: ({ row }) => {
@@ -228,6 +276,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "acepta_ctacte",
         accessorKey: "acepta_ctacte",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="acepta_ctacte"/>),
         cell: ({ row }) => {
@@ -236,10 +285,13 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "tags",
         accessorKey: "tags",
-        header: "Tags",
+        header: ({column}) =>(<DataTableColumnHeader column={column} title="tags"/>),
+        
     },
     {
+        id: "ranking",
         accessorKey: "ranking",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="ranking"/>),
         cell: ({ row }) => {
@@ -248,6 +300,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "activo",
         accessorKey: "activo",
         header: ({column}) =>(<DataTableColumnHeader column={column} title="Activo" />),
         cell: ({ row }) => {
@@ -256,6 +309,7 @@ export const columns: ColumnDef<Producto>[] = [
         },
     },
     {
+        id: "id_negocio",
         accessorKey: "id_negocio",
         header: ({column})=>(<DataTableColumnHeader column={column} title="id_negocio"/>),
     },

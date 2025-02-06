@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
+import { useSearchParams } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 const productoSchema = z.object({
   codigo: z.string().nonempty("El código es requerido").max(7, "El código no puede tener más de 7 caracteres"),
@@ -21,12 +23,13 @@ const productoSchema = z.object({
   acepta_desc: z.boolean(),
   acepta_ctacte: z.boolean(),
   tags: z.string().optional(),
-  ranking: z.string().max(4, "El ranking no puede tener más de 4 caracteres").optional(),
+  ranking: z.union([z.string(), z.number()]).optional(),
   activo: z.boolean(),
-  id_negocio: z.string().nonempty("El ID de negocio es requerido").max(7, "El ID de negocio no puede tener más de 7 caracteres"),
+  id_negocio: z.union([z.string().nonempty("El ID de negocio es requerido").max(7, "El ID de negocio no puede tener más de 7 caracteres"), z.number()]),
 });
 
 const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () => void, initialData?: any }> = ({ onSubmit, onCancel, initialData }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     codigo: '',
     producto: '',
@@ -51,6 +54,16 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const searchParams = useSearchParams();
+  const id_producto = searchParams?.get("id_producto");
+  console.log("ID", id_producto);
+  useEffect(() => {
+    if (id_producto) {
+      fetch(`/api/productos?id_producto=${id_producto}`)
+        .then(response => response.json())
+        .then(data => setFormData(data));
+    }
+  }, [id_producto]);
 
   useEffect(() => {
     if (initialData) {
@@ -114,6 +127,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
       if (response.ok) {
         const data = await response.json();
         onSubmit(data);
+        router.push('/productos');
       } else {
         console.error('Error al crear o actualizar el producto');
       }
@@ -122,6 +136,41 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
     }
   };
 
+  const handleCancel = () => {
+    setFormData(initialData ?? {});
+    setErrors({});
+    onCancel();
+  };
+
+  const handleUpdate = async () => {
+    if (id_producto) {
+      try {
+        // Asegúrate de pasar el ID del producto correctamente en la URL
+        const response = await fetch(`/api/productos?id_producto=${id_producto}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData), // Los datos a actualizar
+        });
+  
+        // Verifica que la respuesta sea exitosa
+        if (response.ok) {
+          const data = await response.json(); // Obtén el producto actualizado
+          router.push('/productos');
+          
+        } else {
+          console.error('Error al actualizar el producto:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error al enviar el formulario:', error);
+      }
+
+    }
+  };
+  
+  
+
   return (
     <form onSubmit={handleSubmit} className="p-2 grid grid-cols-4 gap-2">
       <div className="mb-2">
@@ -129,7 +178,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="codigo"
-          value={formData.codigo}
+          value={formData.codigo ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -140,7 +189,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="producto"
-          value={formData.producto}
+          value={formData.producto ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -151,7 +200,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="codigo_presentacion"
-          value={formData.codigo_presentacion}
+          value={formData.codigo_presentacion ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -162,7 +211,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="id_rubros"
-          value={formData.id_rubros}
+          value={formData.id_rubros ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -173,7 +222,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="id_proveedores"
-          value={formData.id_proveedores}
+          value={formData.id_proveedores ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -184,7 +233,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="margen"
-          value={formData.margen}
+          value={formData.margen ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -195,7 +244,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="px_costo"
-          value={formData.px_costo}
+          value={formData.px_costo ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -206,7 +255,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="px_venta"
-          value={formData.px_venta}
+          value={formData.px_venta ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -217,7 +266,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="date"
           name="fecha_rotacion"
-          value={formData.fecha_rotacion}
+          value={formData.fecha_rotacion ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -228,7 +277,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="tags"
-          value={formData.tags}
+          value={formData.tags ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -239,7 +288,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="ranking"
-          value={formData.ranking}
+          value={formData.ranking ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -250,7 +299,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         <input
           type="text"
           name="id_negocio"
-          value={formData.id_negocio}
+          value={formData.id_negocio ?? ''}
           onChange={handleChange}
           className="w-full p-1 border border-gray-300 rounded"
         />
@@ -347,12 +396,24 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         </div>
       </div>
       <div className="flex justify-end col-span-4">
-        <button type="button" onClick={onCancel} className="bg-red-500 text-white p-2 rounded mr-2">
+        <button type="button" onClick={handleCancel} className="bg-red-500 text-white p-2 rounded mr-2">
           Cancelar
         </button>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          {initialData ? 'Actualizar' : 'Crear'}
-        </button>
+        <button
+  type="submit"
+  className="bg-blue-500 text-white p-2 rounded"
+  onClick={(e) => {
+    e.preventDefault(); // Para evitar el comportamiento predeterminado del botón
+    if (id_producto) {
+      handleUpdate(); // Si existe id_producto, actualiza el producto
+    } else {
+      handleSubmit(e); // Pass the event argument to handleSubmit
+    }
+  }}
+>
+  {id_producto ? 'Actualizar' : 'Crear'}
+</button>
+
       </div>
     </form>
   );

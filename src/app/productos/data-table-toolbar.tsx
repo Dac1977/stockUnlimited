@@ -23,6 +23,7 @@ export function DataTableToolbar<TData extends Record<string, any>>({
 }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0
     console.log("columna productos",data)
+   
     const getUniqueValues = (columnId: string, data: TData[]) => {
       const values = data.map((row: TData) => row[columnId])
         ? Array.from(
@@ -42,7 +43,12 @@ export function DataTableToolbar<TData extends Record<string, any>>({
         : [];
       return values;
     };
+   
+    
+    
       const uniqueProduct = getUniqueValues("producto", data);
+      const uniqueIdRubros = getUniqueValues("id_rubros", data);
+      const uniqueIdProveedores = getUniqueValues("id_proveedores", data);
       
       console.log("productos unicos",uniqueProduct);
       const createOptions = (uniqueValues: string[], icon: any) => {
@@ -54,9 +60,12 @@ export function DataTableToolbar<TData extends Record<string, any>>({
       };
     
       const productoOptions = createOptions(uniqueProduct, null);
+      const idRubrosOptions = createOptions(uniqueIdRubros, null);
+      const idProveedoresOptions = createOptions(uniqueIdProveedores, null);
+      
       console.log("productos options",productoOptions);
     return (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between m-4">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
                     placeholder="Filter products..."
@@ -73,13 +82,20 @@ export function DataTableToolbar<TData extends Record<string, any>>({
                         options={productoOptions}
                     />
                 )}
-                {/* {table.getColumn("availability") && (
+                {table.getColumn("id_proveedores") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("availability")}
-                        title="Availability"
-                        options={availability}
+                        column={table.getColumn("id_proveedores")}
+                        title="Proveedores"
+                        options={idProveedoresOptions}
                     />
-                )} */}
+                )}
+                {table.getColumn("id_rubros") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("id_rubros")}
+                        title="Rubros"
+                        options={idRubrosOptions}
+                    />
+                )}
                 {isFiltered && (
                     <Button
                         variant="ghost"
