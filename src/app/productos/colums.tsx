@@ -26,19 +26,19 @@ export const columns: ColumnDef<Producto>[] = [
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="default" className="h-8 w-8 p-0">
+                        <Button variant="outline" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        {/* <DropdownMenuLabel>Codigo</DropdownMenuLabel> */}
+                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(productos.id_producto.toString())}
                         >
-                            Copy ID
+                            Copiar ID
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem >
                             <Link href={`/productos/action/?id_producto=${productos.id_producto}`}>
                             Editar

@@ -110,60 +110,9 @@ export function DataTable<TData extends Record<string, any>, TValue>({
           )}
         </TableBody>
           </Table>
-        {/* <div className="flex items-center justify-between space-x-2 py-4 p-2">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Primera
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            Última
-          </Button>
+        
         </div>
-        <div className="flex items-center space-x-2">
-          <span>
-            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
-          </span>
-          <select
-            value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
-            className="border rounded p-1"
-          >
-            {[10, 20, 30, 40, 50].map((size) => (
-          <option key={size} value={size}>
-            Mostrar {size}
-          </option>
-            ))}
-          </select>
-        </div>
-          </div> */}
-        </div>
-        <div>
+        <div className="m-4">
           <DataTablePagination table={table} />
         </div>
       </div>
