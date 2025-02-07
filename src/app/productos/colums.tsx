@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import { Prisma } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { DataTableColumnHeader } from "@/app/productos/data-table-column-header"
 import Link from "next/link"
-export type Producto = Prisma.productosGetPayload<{}>
+export type Producto = Prisma.productosGetPayload<object>
 
 export const columns: ColumnDef<Producto>[] = [
     {
@@ -172,7 +172,7 @@ export const columns: ColumnDef<Producto>[] = [
             <DataTableColumnHeader column={column} title="Margen Forzar" />
         ),
         cell: ({ row }) => {
-            const margen_forzar = parseFloat(row.getValue("margen_forzar"))
+            // const margen_forzar = parseFloat(row.getValue("margen_forzar"))
             const mostrar_forzar = row.getValue("margen_forzar")
             return <div className="text-center font-medium">{mostrar_forzar ? "si" : "no"}</div>
         },

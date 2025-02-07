@@ -30,7 +30,7 @@ const ProductosPage: React.FC = () => {
   return (
     <div>
       <h1 className="text-center">Productos</h1>
-      {/* Renderiza los productos aquí */}
+     
       <DataTable columns={columns} data={productos || []} />
     </div>
   );

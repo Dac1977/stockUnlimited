@@ -3,9 +3,9 @@ import {
     ArrowRight,
     ArrowUp,
     CheckCircle,
-    Circle,
+    // Circle,
     CircleOff,
-    HelpCircle,
+    // HelpCircle,
     Timer,
 } from "lucide-react";
 

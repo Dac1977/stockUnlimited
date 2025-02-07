@@ -5,9 +5,9 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import { IoMdAddCircleOutline } from "react-icons/io";
-import { FaRegEdit } from "react-icons/fa";
+// import { FaRegEdit } from "react-icons/fa";
 import { RiProductHuntLine } from "react-icons/ri";
-import { MdEdit } from "react-icons/md";
+// import { MdEdit } from "react-icons/md";
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
