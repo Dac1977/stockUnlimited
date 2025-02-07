@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
 import { DataTableToolbar } from "./data-table-toolbar"
 import {
   ColumnDef,
@@ -15,13 +15,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { columns } from "./colums"
+// import {
+//   DropdownMenu,
+//   DropdownMenuCheckboxItem,
+//   DropdownMenuContent,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
+// import { columns } from "./colums"
 import {
   Table,
   TableBody,
@@ -30,13 +30,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { any } from "zod"
+// import { any } from "zod"
 import { DataTablePagination } from "./data-table-pagination"
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData>[]
+  columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTable<TData extends Record<string, any>, TValue>({
   columns,
   data,
@@ -60,12 +61,12 @@ export function DataTable<TData extends Record<string, any>, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination, // ✅ Maneja cambios de paginación
+    onPaginationChange: setPagination, 
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      pagination: { pageIndex, pageSize }, // ✅ Usa el estado actualizado
+      pagination: { pageIndex, pageSize }, 
     },
   });
   console.log(columns)

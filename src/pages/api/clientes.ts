@@ -52,6 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(201).json(clientWithStringBigInt);
     } catch (error) {
       console.error('Error creating client:', error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       res.status(500).json({ error: 'Error creating client', details: (error as any).message });
     }
   } else {

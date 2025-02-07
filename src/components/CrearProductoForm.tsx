@@ -27,7 +27,7 @@ const productoSchema = z.object({
   activo: z.boolean(),
   id_negocio: z.union([z.string().nonempty("El ID de negocio es requerido").max(7, "El ID de negocio no puede tener más de 7 caracteres"), z.number()]),
 });
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () => void, initialData?: any }> = ({ onSubmit, onCancel, initialData }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -156,7 +156,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
   
         // Verifica que la respuesta sea exitosa
         if (response.ok) {
-          const data = await response.json(); // Obtén el producto actualizado
+          // const data = await response.json(); // Obtén el producto actualizado
           router.push('/productos');
           
         } else {

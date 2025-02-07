@@ -7,15 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "@/app/productos/data-table-view-options"
 
-import { labels, availability } from "../productos/data/data"
+// import { labels, availability } from "../productos/data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface DataTableToolbarProps<TData extends Record<string, any>> {
     table: Table<TData>
     data: TData[]
     
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTableToolbar<TData extends Record<string, any>>({
     table,
     data,
@@ -30,6 +30,7 @@ export function DataTableToolbar<TData extends Record<string, any>>({
           new Set(
             // Aplanar el array y obtener los valores únicos, incluyendo vacíos
             data.map((row) => row[columnId])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .map((item: any) => {
                 // Convertir claves vacías en 'sin completar'
                 if (Array.isArray(item) && item.length === 0) {
@@ -51,6 +52,7 @@ export function DataTableToolbar<TData extends Record<string, any>>({
       const uniqueIdProveedores = getUniqueValues("id_proveedores", data);
       
       console.log("productos unicos",uniqueProduct);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const createOptions = (uniqueValues: string[], icon: any) => {
         return uniqueValues.map((value) => ({
           label: value,
