@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
+  console.log(request); 
   try {
     const clients = await prisma.clientes.findMany();
     const clientsWithStringBigInt = clients.map(client => ({
