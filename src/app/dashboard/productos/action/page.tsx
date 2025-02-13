@@ -1,6 +1,6 @@
 "use client"
 import React, { Suspense } from 'react';
-import CrearProductoForm from '../../../components/CrearProductoForm';
+import CrearProductoForm from '../../../../components/CrearProductoForm';
 
 const CrearProductoPage: React.FC = () => {
     return (

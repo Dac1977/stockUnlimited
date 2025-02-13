@@ -1,4 +1,5 @@
 // filepath: /home/diego/Documentos/GitHub/stockunlimited/src/components/Navbar.tsx
+"use client"
 import Link from 'next/link';
 
 const Navbar = () => {
@@ -10,8 +11,9 @@ const Navbar = () => {
         </div>
         <div className="space-x-4">
           <Link href="/" className="text-gray-300 hover:text-white">Inicio</Link>
-          <Link href="/productos" className="text-gray-300 hover:text-white">Productos</Link>
-          <Link href="/clientes" className="text-gray-300 hover:text-white">Clientes</Link>
+          <Link href="/dashboard/productos" className="text-gray-300 hover:text-white">Productos</Link>
+          <Link href="/dashboard/proveedores" className="text-gray-300 hover:text-white">Proveedores</Link>
+          <Link href="/dashboard/clientes" className="text-gray-300 hover:text-white">Clientes</Link>
           <Link href="/contacto" className="text-gray-300 hover:text-white">Contacto</Link>
         </div>
       </div>

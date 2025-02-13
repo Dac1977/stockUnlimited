@@ -5,7 +5,7 @@ import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DataTableViewOptions } from "@/app/productos/data-table-view-options"
+import { DataTableViewOptions } from "@/app/dashboard/productos/data-table-view-options"
 
 // import { labels, availability } from "../productos/data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
