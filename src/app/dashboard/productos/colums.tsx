@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { DataTableColumnHeader } from "@/app/productos/data-table-column-header"
+import { DataTableColumnHeader } from "@/app/dashboard/productos/data-table-column-header"
 import Link from "next/link"
 export type Producto = Prisma.productosGetPayload<object>
 
