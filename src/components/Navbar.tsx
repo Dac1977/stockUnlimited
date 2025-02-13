@@ -1,4 +1,5 @@
 // filepath: /home/diego/Documentos/GitHub/stockunlimited/src/components/Navbar.tsx
+"use client"
 import Link from 'next/link';
 
 const Navbar = () => {
