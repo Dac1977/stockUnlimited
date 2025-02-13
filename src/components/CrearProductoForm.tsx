@@ -127,7 +127,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
       if (response.ok) {
         const data = await response.json();
         onSubmit(data);
-        router.push('/productos');
+        router.push('dashboard/productos');
       } else {
         console.error('Error al crear o actualizar el producto');
       }
@@ -157,7 +157,7 @@ const CrearProductoForm: React.FC<{ onSubmit: (data: any) => void, onCancel: () 
         // Verifica que la respuesta sea exitosa
         if (response.ok) {
           // const data = await response.json(); // Obtén el producto actualizado
-          router.push('/productos');
+          router.push('/dashboard/productos');
           
         } else {
           console.error('Error al actualizar el producto:', response.statusText);

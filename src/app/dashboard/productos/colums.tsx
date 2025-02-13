@@ -40,7 +40,7 @@ export const columns: ColumnDef<Producto>[] = [
                             Copiar ID
                         </DropdownMenuItem>
                         <DropdownMenuItem >
-                            <Link href={`/productos/action/?id_producto=${productos.id_producto}`}>
+                            <Link href={`/dashboard/productos/action/?id_producto=${productos.id_producto}`}>
                             Editar
                             </Link>
                             
