@@ -85,7 +85,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(newProveedor, { status: 201 });
+    return NextResponse.json(
+      { ...newProveedor, cuil: newProveedor.cuil.toString() },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating proveedor:', error);
     return NextResponse.json({ error: 'Error creating proveedor' }, { status: 500 });
