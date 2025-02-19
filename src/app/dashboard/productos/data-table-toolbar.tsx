@@ -3,8 +3,8 @@
 import { useEffect } from "react"
 import Cookies from "js-cookie"
 import { Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
-
+import { X, Download } from "lucide-react"
+import * as XLSX from "xlsx" // Importar xlsx
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "@/app/dashboard/productos/data-table-view-options"
@@ -62,6 +62,14 @@ export function DataTableToolbar<TData extends Record<string, any>>({
     const idRubrosOptions = createOptions(uniqueIdRubros)
     const idProveedoresOptions = createOptions(uniqueIdProveedores)
 
+    const exportToExcel = () => {
+      const filteredData = table.getFilteredRowModel().rows.map(row => row.original) // Obtener datos filtrados
+      const worksheet = XLSX.utils.json_to_sheet(filteredData) // Convertir a hoja de Excel
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data") // Agregar hoja
+      XLSX.writeFile(workbook, "tabla_exportada.xlsx") // Descargar archivo
+  }
+
     return (
         <div className="flex items-center justify-between m-4">
             <div className="flex flex-1 items-center space-x-2">
@@ -107,8 +115,16 @@ export function DataTableToolbar<TData extends Record<string, any>>({
                         <X />
                     </Button>
                 )}
+                <Button
+                    variant="outline"
+                    onClick={exportToExcel}
+                    className="h-8 px-2 lg:px-3"
+                >
+                    Exportar Excel <Download className="ml-2 h-4 w-4" />
+                </Button>
             </div>
             <DataTableViewOptions table={table} />
+            
         </div>
     )
 }
