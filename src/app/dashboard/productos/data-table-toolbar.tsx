@@ -120,7 +120,7 @@ export function DataTableToolbar<TData extends Record<string, any>>({
                     onClick={exportToExcel}
                     className="h-8 px-2 lg:px-3"
                 >
-                    Exportar Excel <Download className="ml-2 h-4 w-4" />
+                    Exportar a Excel <Download className="ml-2 h-4 w-4" />
                 </Button>
             </div>
             <DataTableViewOptions table={table} />

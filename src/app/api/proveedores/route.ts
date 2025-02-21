@@ -119,7 +119,7 @@ export async function PUT(request: NextRequest) {
       dias_preventista, 
       dias_entrega 
     } = body;
-
+    console.log("body", body);
     const updatedProveedor = await prisma.proveedores.update({
       where: { id_proveedor: Number(id_proveedor) },
       data: {

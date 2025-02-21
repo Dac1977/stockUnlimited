@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 import {
   Form,
   FormField,
@@ -25,6 +26,8 @@ import {
   SelectLabel,
   SelectGroup,
 } from "@/components/ui/select";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   id_negocio: z.number().positive().int(),
@@ -48,10 +51,14 @@ const formSchema = z.object({
   dias_entrega: z.string(),
 });
 
-const CrearProveedorForm = () => {
+const CrearProveedorForm = ({ initialData }: { initialData?: any }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const id_proveedor = searchParams?.get("id_proveedor");
+  console.log("id_proveedor", id_proveedor);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       id_negocio: 0,
       proveedor: "",
       cuil: BigInt(0),
@@ -65,6 +72,13 @@ const CrearProveedorForm = () => {
       dias_entrega: "",
     },
   });
+  useEffect(() => {
+    if (id_proveedor) {
+      fetch(`/api/proveedores?id_proveedor=${id_proveedor}`)
+        .then(response => response.json())
+        .then(data => form.reset({ ...data, cuil: BigInt(data.cuil) }));
+    }
+  }, [id_proveedor, form]);
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       console.log("data", data);
@@ -86,15 +100,47 @@ const CrearProveedorForm = () => {
       const result = await response.json();
       console.log(result);
       toast.success("Proveedor creado exitosamente!");
+      router.push('/dashboard/proveedores');
     } catch (error) {
       console.error("Error:", error);
       toast.error("Error al crear el proveedor.");
     }
   };
+  // const { getValues } = useForm()
+
+  const onUpdate = async () => {
+    try {
+      const data = form.getValues();
+      console.log("data", data);
+      const response = await fetch(`/api/proveedores?id_proveedor=${id_proveedor}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          cuil: data.cuil.toString(),
+        }),
+      });
   
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      toast.success("Proveedor actualizado exitosamente!");
+      router.push('/dashboard/proveedores');
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Error al actualizar el proveedor.");
+    }
+  }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(id_proveedor ? onUpdate : onSubmit)}
+        className="space-y-8"
+      >
         <div className="grid grid-cols-4 m-4 gap-8">
           <FormField
             control={form.control}
@@ -216,6 +262,7 @@ const CrearProveedorForm = () => {
                 <FormLabel>Días preventista</FormLabel>
                 <FormControl>
                   <Select
+                    value={field.value ? field.value : undefined}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -252,6 +299,7 @@ const CrearProveedorForm = () => {
                 <FormLabel>Dias de entrega</FormLabel>
                 <FormControl>
                   <Select
+                    value={field.value ? field.value : undefined}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -336,14 +384,11 @@ const CrearProveedorForm = () => {
                   <span className="font-bold">Control de stock</span>
                 </FormLabel>
                 <FormControl>
-                  {/* <label className="flex items-center space-x-2 ml-2"> */}
                   <Checkbox
                     checked={field.value}
-                    onChange={field.onChange}
+                    onCheckedChange={field.onChange}
                     className="ml-2"
                   />
-
-                  {/* </label> */}
                 </FormControl>
                 <FormDescription>
                   Si se marca esta casilla, se hara seguimiento del stock de los
@@ -353,7 +398,9 @@ const CrearProveedorForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit">
+            {id_proveedor ? "Editar" : "Crear proveedor"}
+          </Button>
         </div>
       </form>
     </Form>
@@ -361,3 +408,4 @@ const CrearProveedorForm = () => {
 };
 
 export default CrearProveedorForm;
+
