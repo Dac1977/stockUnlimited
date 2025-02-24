@@ -36,6 +36,11 @@ const Sidebar = () => {
             {isCollapsed ? <FiTruck size={28} />  :<h2 className="text-xl font-bold mb-4">{!isCollapsed && 'Proveedores'}</h2> }
           </Link>
         </li>
+        <li className="mb-2 flex justify-start">
+          <Link href="/dashboard/proveedores/action" className={`text-gray-300 hover:text-white ${pathname === '/dashboard/proveedores/action' ? 'font-bold text-white' : ''}`} title="Crear Proveedor">
+            {isCollapsed ? <IoMdAddCircleOutline size={30} /> : 'Crear Proveedor'}
+          </Link>
+        </li>
       </ul>
     </div>
   );

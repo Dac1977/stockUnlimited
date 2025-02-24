@@ -1,71 +1,75 @@
 "use client"
 
+import { useEffect } from "react"
+import Cookies from "js-cookie"
 import { Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
-
+import { X, Download } from "lucide-react"
+import * as XLSX from "xlsx" // Importar xlsx
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "@/app/dashboard/productos/data-table-view-options"
-
-// import { labels, availability } from "../productos/data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 interface DataTableToolbarProps<TData extends Record<string, any>> {
     table: Table<TData>
     data: TData[]
-    
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export function DataTableToolbar<TData extends Record<string, any>>({
     table,
     data,
-    
 }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0
-    console.log("columna productos",data)
-   
+
+    // Leer filtros desde la cookie al montar
+    useEffect(() => {
+        const savedFilters = Cookies.get("tableFilters")
+        if (savedFilters) {
+            try {
+                const parsedFilters = JSON.parse(savedFilters)
+                parsedFilters.forEach((filter: { id: string, value: string }) => {
+                    table.getColumn(filter.id)?.setFilterValue(filter.value)
+                })
+            } catch (error) {
+                console.error("Error parsing filters from cookie:", error)
+            }
+        }
+    }, [table])
+
+    // Guardar filtros en la cookie cuando cambian
+    useEffect(() => {
+        const filters = table.getState().columnFilters
+        Cookies.set("tableFilters", JSON.stringify(filters), { expires: 7 }) // Guarda por 7 días
+    }, [table.getState().columnFilters])
+
     const getUniqueValues = (columnId: string, data: TData[]) => {
-      const values = data.map((row: TData) => row[columnId])
-        ? Array.from(
-          new Set(
-            // Aplanar el array y obtener los valores únicos, incluyendo vacíos
-            data.map((row) => row[columnId])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .map((item: any) => {
-                // Convertir claves vacías en 'sin completar'
-                if (Array.isArray(item) && item.length === 0) {
-                  return null;
-                }
-                return item;
-              })
-             .flat() // Aplanar nuevamente después de dividir claves combinadas
-          )
-        )
-        : [];
-      return values;
-    };
-   
-    
-    
-      const uniqueProduct = getUniqueValues("producto", data);
-      const uniqueIdRubros = getUniqueValues("id_rubros", data);
-      const uniqueIdProveedores = getUniqueValues("id_proveedores", data);
-      
-      console.log("productos unicos",uniqueProduct);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const createOptions = (uniqueValues: string[], icon: any) => {
-        return uniqueValues.map((value) => ({
-          label: value,
-          value: value,
-          icon: icon,
-        }));
-      };
-    
-      const productoOptions = createOptions(uniqueProduct, null);
-      const idRubrosOptions = createOptions(uniqueIdRubros, null);
-      const idProveedoresOptions = createOptions(uniqueIdProveedores, null);
-      
-      console.log("productos options",productoOptions);
+        const values = Array.from(new Set(data.map(row => row[columnId]).flat()))
+        return values
+    }
+
+    const uniqueProduct = getUniqueValues("producto", data)
+    const uniqueIdRubros = getUniqueValues("id_rubros", data)
+    const uniqueIdProveedores = getUniqueValues("id_proveedores", data)
+
+    const createOptions = (uniqueValues: string[]) => {
+        return uniqueValues.map(value => ({
+            label: value,
+            value: value
+        }))
+    }
+
+    const productoOptions = createOptions(uniqueProduct)
+    const idRubrosOptions = createOptions(uniqueIdRubros)
+    const idProveedoresOptions = createOptions(uniqueIdProveedores)
+
+    const exportToExcel = () => {
+      const filteredData = table.getFilteredRowModel().rows.map(row => row.original) // Obtener datos filtrados
+      const worksheet = XLSX.utils.json_to_sheet(filteredData) // Convertir a hoja de Excel
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data") // Agregar hoja
+      XLSX.writeFile(workbook, "tabla_exportada.xlsx") // Descargar archivo
+  }
+
     return (
         <div className="flex items-center justify-between m-4">
             <div className="flex flex-1 items-center space-x-2">
@@ -80,7 +84,7 @@ export function DataTableToolbar<TData extends Record<string, any>>({
                 {table.getColumn("producto") && (
                     <DataTableFacetedFilter
                         column={table.getColumn("producto")}
-                        title="producto"
+                        title="Producto"
                         options={productoOptions}
                     />
                 )}
@@ -101,15 +105,26 @@ export function DataTableToolbar<TData extends Record<string, any>>({
                 {isFiltered && (
                     <Button
                         variant="ghost"
-                        onClick={() => table.resetColumnFilters()}
+                        onClick={() => {
+                            table.resetColumnFilters()
+                            Cookies.remove("tableFilters") // Eliminar la cookie al resetear
+                        }}
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
                         <X />
                     </Button>
                 )}
+                <Button
+                    variant="outline"
+                    onClick={exportToExcel}
+                    className="h-8 px-2 lg:px-3"
+                >
+                    Exportar a Excel <Download className="ml-2 h-4 w-4" />
+                </Button>
             </div>
             <DataTableViewOptions table={table} />
+            
         </div>
     )
 }

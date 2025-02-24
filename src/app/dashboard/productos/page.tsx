@@ -28,8 +28,8 @@ const ProductosPage: React.FC = () => {
   console.log(productos);
 
   return (
-    <div>
-      <h1 className="text-center">Productos</h1>
+    <div className='text-center'>
+      <h1 className='text-3xl font-bold m-4'>Productos</h1>
      
       <DataTable columns={columns} data={productos || []} />
     </div>
