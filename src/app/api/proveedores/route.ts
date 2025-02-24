@@ -85,7 +85,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(newProveedor, { status: 201 });
+    return NextResponse.json(
+      { ...newProveedor, cuil: newProveedor.cuil.toString() },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating proveedor:', error);
     return NextResponse.json({ error: 'Error creating proveedor' }, { status: 500 });
@@ -116,7 +119,7 @@ export async function PUT(request: NextRequest) {
       dias_preventista, 
       dias_entrega 
     } = body;
-
+    console.log("body", body);
     const updatedProveedor = await prisma.proveedores.update({
       where: { id_proveedor: Number(id_proveedor) },
       data: {

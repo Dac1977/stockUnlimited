@@ -1,3 +1,5 @@
+"use client";
+
 import { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,
@@ -18,10 +20,12 @@ import { useEffect, useState } from "react";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  tableId: string; // Agregamos tableId para diferenciar la cookie de paginación
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
-  const storedPagination = Cookies.get("pagination");
+export function DataTablePagination<TData>({ table, tableId }: DataTablePaginationProps<TData>) {
+  const cookieName = `${tableId}_pagination`;
+  const storedPagination = Cookies.get(cookieName);
   const initialPagination = storedPagination
     ? JSON.parse(storedPagination)
     : { pageIndex: 0, pageSize: 10 };
@@ -30,43 +34,29 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const [pageSize, setPageSize] = useState<number>(initialPagination.pageSize);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // ⚡ Esperar a que la tabla cargue los datos antes de aplicar la paginación
   useEffect(() => {
     if (table.getRowModel().rows.length > 0) {
-      setLoading(false); // Datos cargados, ocultar el loading
+      setLoading(false);
       const totalPageCount = table.getPageCount();
-
-      // Si el `pageIndex` guardado es mayor al total de páginas, corregirlo
       if (pageIndex >= totalPageCount) {
         setPageIndex(Math.max(0, totalPageCount - 1));
       }
-
-      // Aplicar la paginación correctamente
       table.setPageIndex(pageIndex);
       table.setPageSize(pageSize);
     }
   }, [table.getRowModel().rows.length]);
 
-  // 🔥 Actualizar la cookie cuando cambian `pageIndex` o `pageSize`
   useEffect(() => {
-    Cookies.set("pagination", JSON.stringify({ pageIndex, pageSize }), { expires: 7 });
+    Cookies.set(cookieName, JSON.stringify({ pageIndex, pageSize }), { expires: 7 });
     table.setPageIndex(pageIndex);
     table.setPageSize(pageSize);
-  }, [pageIndex, pageSize]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-4">
-        <p className="text-sm font-medium">Cargando datos...</p>
-      </div>
-    );
-  }
+  }, [pageIndex, pageSize]); // ✅ Eliminamos `tableId` de las dependencias
+  
 
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} de{" "}
-        {table.getFilteredRowModel().rows.length} fila(s) seleccionada.
+        {table.getFilteredSelectedRowModel().rows.length} de {table.getFilteredRowModel().rows.length} fila(s) seleccionada.
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -17,14 +18,15 @@ import {
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>
+    tableId: string // ID único para diferenciar cada tabla
 }
 
-export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData>({ table, tableId }: DataTableViewOptionsProps<TData>) {
+    const cookieName = `${tableId}_columnVisibility` // Nombre único de la cookie
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({})
 
-    // Cargar configuración desde la cookie al montar el componente
     useEffect(() => {
-        const storedVisibility = Cookies.get("columnVisibility")
+        const storedVisibility = Cookies.get(cookieName)
         if (storedVisibility) {
             const parsedVisibility = JSON.parse(storedVisibility)
             setColumnVisibility(parsedVisibility)
@@ -34,13 +36,15 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 table.getColumn(columnId)?.toggleVisibility(parsedVisibility[columnId])
             })
         }
-    }, [table])
+    }, [table, cookieName])
 
-    // Guardar en la cookie cada vez que cambian las columnas visibles
     const handleColumnToggle = (columnId: string, isVisible: boolean) => {
-        const newVisibility = { ...columnVisibility, [columnId]: isVisible }
-        setColumnVisibility(newVisibility)
-        Cookies.set("columnVisibility", JSON.stringify(newVisibility), { expires: 7 }) // Guarda por 7 días
+        setColumnVisibility((prevVisibility) => {
+            const newVisibility = { ...prevVisibility, [columnId]: isVisible }
+            Cookies.set(cookieName, JSON.stringify(newVisibility), { expires: 7 })
+            return newVisibility
+        })
+
         table.getColumn(columnId)?.toggleVisibility(isVisible)
     }
 
@@ -52,12 +56,8 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                     Ver
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-                align="end"
-                className="w-[150px] overflow-y-auto"
-                style={{ maxHeight: "calc(100vh - 200px)" }}
-            >
-                <DropdownMenuLabel>Mostrar/Ocultar columnas</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-[150px] overflow-y-auto" style={{ maxHeight: "calc(100vh - 200px)" }}>
+                <DropdownMenuLabel>Ver/Ocultar columnas</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                     .getAllColumns()
