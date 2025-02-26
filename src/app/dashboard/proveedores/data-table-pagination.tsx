@@ -32,10 +32,11 @@ export function DataTablePagination<TData>({ table, tableId }: DataTablePaginati
 
   const [pageIndex, setPageIndex] = useState<number>(initialPagination.pageIndex);
   const [pageSize, setPageSize] = useState<number>(initialPagination.pageSize);
+  //eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<boolean>(true);
-
+  const rows = table.getRowModel().rows;
   useEffect(() => {
-    if (table.getRowModel().rows.length > 0) {
+    if (rows.length > 0) {
       setLoading(false);
       const totalPageCount = table.getPageCount();
       if (pageIndex >= totalPageCount) {
@@ -44,14 +45,13 @@ export function DataTablePagination<TData>({ table, tableId }: DataTablePaginati
       table.setPageIndex(pageIndex);
       table.setPageSize(pageSize);
     }
-  }, [table.getRowModel().rows.length]);
+  }, [table, rows.length, pageIndex, pageSize]);
 
   useEffect(() => {
     Cookies.set(cookieName, JSON.stringify({ pageIndex, pageSize }), { expires: 7 });
     table.setPageIndex(pageIndex);
     table.setPageSize(pageSize);
-  }, [pageIndex, pageSize]); // ✅ Eliminamos `tableId` de las dependencias
-  
+  }, [table, pageIndex, pageSize, cookieName]);
 
   return (
     <div className="flex items-center justify-between px-2">

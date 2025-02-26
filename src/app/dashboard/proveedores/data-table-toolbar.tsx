@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "./data-table-view-options"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface DataTableToolbarProps<TData extends Record<string, any>> {
     table: Table<TData>
     data: TData[]
     tableId: string // Agregamos tableId para diferenciar cada tabla
 }
-
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTableToolbar<TData extends Record<string, any>>({
     table,
     data,
@@ -37,11 +37,11 @@ export function DataTableToolbar<TData extends Record<string, any>>({
             }
         }
     }, [table, tableId])
-
+    const columnFilters = table.getState().columnFilters
     useEffect(() => {
-        const filters = table.getState().columnFilters
+        const filters = columnFilters
         Cookies.set(`${tableId}_tableFilters`, JSON.stringify(filters), { expires: 7 })
-    }, [table.getState().columnFilters, tableId])
+    }, [table, columnFilters, tableId])
 
     const exportToExcel = () => {
       const filteredData = table.getFilteredRowModel().rows.map(row => row.original)
