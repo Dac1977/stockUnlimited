@@ -39,6 +39,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     options,
     children,
 }: DataTableFacetedFilterProps<TData, TValue>) {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const facets = column?.getFacetedUniqueValues() as Map<any, any>
     const selectedValues = new Set(column?.getFilterValue() as string[])
 

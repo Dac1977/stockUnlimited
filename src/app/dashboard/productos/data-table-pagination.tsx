@@ -30,29 +30,30 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const [pageSize, setPageSize] = useState<number>(initialPagination.pageSize);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const rowCount = table.getRowModel().rows.length; // 🔹 Extraemos la expresión
   // ⚡ Esperar a que la tabla cargue los datos antes de aplicar la paginación
   useEffect(() => {
-    if (table.getRowModel().rows.length > 0) {
-      setLoading(false); // Datos cargados, ocultar el loading
+  
+    if (rowCount > 0) {
+      setLoading(false);
       const totalPageCount = table.getPageCount();
-
-      // Si el `pageIndex` guardado es mayor al total de páginas, corregirlo
+  
       if (pageIndex >= totalPageCount) {
         setPageIndex(Math.max(0, totalPageCount - 1));
       }
-
-      // Aplicar la paginación correctamente
+  
       table.setPageIndex(pageIndex);
       table.setPageSize(pageSize);
     }
-  }, [table.getRowModel().rows.length]);
+  }, [table, pageIndex, pageSize, rowCount]); // 🔹 Ahora usamos `rowCount` en las dependencias
+  
 
   // 🔥 Actualizar la cookie cuando cambian `pageIndex` o `pageSize`
   useEffect(() => {
     Cookies.set("pagination", JSON.stringify({ pageIndex, pageSize }), { expires: 7 });
     table.setPageIndex(pageIndex);
     table.setPageSize(pageSize);
-  }, [pageIndex, pageSize]);
+  }, [table,pageIndex, pageSize]);
 
   if (loading) {
     return (

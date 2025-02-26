@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+//eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { bigint, z } from "zod";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -50,7 +51,7 @@ const formSchema = z.object({
   dias_preventista: z.string(),
   dias_entrega: z.string(),
 });
-
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CrearProveedorForm = ({ initialData }: { initialData?: any }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -128,6 +129,7 @@ const CrearProveedorForm = ({ initialData }: { initialData?: any }) => {
       }
   
       const result = await response.json();
+      console.log(result);
       toast.success("Proveedor actualizado exitosamente!");
       router.push('/dashboard/proveedores');
     } catch (error) {
