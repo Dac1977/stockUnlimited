@@ -22,7 +22,7 @@
 
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `controlstock_new` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 
-USE ``;
+USE `controlstock_new`;
 
 --
 -- Table structure for table `balanzas`
@@ -62,7 +62,7 @@ CREATE TABLE `cashflow` (
   `id_negocio` int(10) unsigned NOT NULL,
   `id_usuario` int(10) unsigned NOT NULL,
   `id_centrocosto` int(10) unsigned NOT NULL,
-  `fecha_carga` DATE NOT NULL,
+  `fecha_carga` date NOT NULL DEFAULT current_timestamp(),
   `fecha_vto` date NOT NULL,
   `fecha_pago` date NOT NULL,
   `tipo` enum('A','B','C','X','IMP') NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE `compras` (
   `id_pago` int(10) unsigned NOT NULL,
   `id_transaccion` int(20) DEFAULT NULL,
   `fecha_comprobante` datetime DEFAULT NULL,
-  `fecha_carga` DATE NOT NULL,
+  `fecha_carga` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_pago` datetime DEFAULT NULL,
   `costo_total` decimal(8,2) unsigned NOT NULL,
   `venta_total` decimal(8,2) unsigned NOT NULL,
@@ -451,7 +451,7 @@ CREATE TABLE `productos` (
   KEY `codigo` (`codigo`),
   KEY `codigo_presentacion` (`codigo_presentacion`),
   KEY `id_negocio` (`id_negocio`)
-) ENGINE=MyISAM AUTO_INCREMENT=9608 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=9609 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -460,7 +460,7 @@ CREATE TABLE `productos` (
 
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
-INSERT INTO `productos` VALUES (9584,123456,'Producto de prueba',654321,'Rubro1','Proveedor1',10.00,1,100.00,150.00,'2025-02-02','2025-02-03 12:58:41',1,0,1,1,1,1,'tag1,tag2',1,1,1),(9607,123462,'chic cola',1237,'2','23424',50.00,0,780.00,1200.00,'2025-02-18','2025-02-11 22:26:44',1,1,1,0,1,1,'tag1,tag3',12,1,2),(9604,123459,'7up',1678123546781,'2','2',70.00,0,700.00,1400.00,'2025-02-13','2025-02-06 19:49:37',1,1,1,0,1,1,'tag1,tag3',1,1,2),(9601,123458,'cocacola',1234,'1111','2',60.00,0,1000.00,1500.00,'2025-02-13','2025-02-06 18:26:34',1,1,1,0,1,1,'tag1,tag3',1,1,2),(9606,123461,'pepsi',23424,'2','3452',50.00,0,1000.00,1500.00,'2025-02-14','2025-02-07 16:57:11',1,1,1,0,1,1,'tag1,tag3',5,1,2),(9605,123461,'fanta',34562362,'2','4',45.00,0,695.00,1300.00,'2025-02-19','2025-02-07 14:24:40',1,1,1,0,1,1,'tag1,tag3',6,1,2);
+INSERT INTO `productos` VALUES (9584,123456,'Producto de prueba',654321,'Rubro1','Proveedor1',10.00,1,100.00,150.00,'2025-02-02','2025-02-03 12:58:41',1,0,1,1,1,1,'tag1,tag2',1,1,1),(9607,123462,'chic cola',1237,'2','23424',50.00,0,780.00,1200.00,'2025-02-18','2025-02-11 22:26:44',1,1,1,0,1,1,'tag1,tag3',12,1,2),(9604,123459,'7up',1678123546781,'2','2',70.00,0,700.00,1400.00,'2025-02-13','2025-02-06 19:49:37',1,1,1,0,1,1,'tag1,tag3',1,1,2),(9601,123458,'cocacola',1234,'1111','2',60.00,0,1000.00,1500.00,'2025-02-13','2025-02-06 18:26:34',1,1,1,0,1,1,'tag1,tag3',1,1,2),(9606,123461,'pepsi',23424,'2','3452',50.00,0,1000.00,1500.00,'2025-02-14','2025-02-07 16:57:11',1,1,1,0,1,1,'tag1,tag3',5,1,2),(9608,4654765,'prueba3',1234,'12','4',60.00,0,1000.00,1300.00,'2025-02-20','2025-02-19 14:02:16',1,1,1,0,1,1,'tag1,tag4',1,1,2);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -623,11 +623,10 @@ CREATE TABLE `proveedores` (
   `pedidos_mail` tinyint(1) NOT NULL DEFAULT 0,
   `pedidos_telefono` tinyint(1) NOT NULL DEFAULT 0,
   `control_stock` tinyint(1) NOT NULL DEFAULT 1,
-  `dias_preventista` set('L','M','M','J','V','S','D') NOT NULL,
-  `dias_entrega` set('L','M','M','J','V','S','D') NOT NULL,
-  PRIMARY KEY (`id_proveedor`),
-  KEY `id_negocio` (`id_negocio`)
-) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `dias_preventista` set('L','Ma','Mi','J','V','S','D') NOT NULL,
+  `dias_entrega` set('L','Ma','Mi','J','V','S','D') NOT NULL,
+  PRIMARY KEY (`id_proveedor`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -636,7 +635,7 @@ CREATE TABLE `proveedores` (
 
 LOCK TABLES `proveedores` WRITE;
 /*!40000 ALTER TABLE `proveedores` DISABLE KEYS */;
-INSERT INTO `proveedores` VALUES (166,2,'distroso55',20253524341,'josé','23342342','rwqr@sdfasf.com',0,0,1,'L','M'),(167,2,'distroso45',20253524341,'josé','23342342','rwqr@sdfasf.com',0,0,1,'L','M'),(168,2,'distroso55',20253524341,'josé','23342342','rwqr@sdfasf.com',0,0,1,'L','M');
+INSERT INTO `proveedores` VALUES (1,123,'Distrosol37',20253524341,'Pedro','23452451','sdfasf@fssdf.com',1,0,1,'Ma','Mi'),(2,123,'Distrosol37',20253524341,'Pedro','23452451','sdfasf@fssdf.com',1,0,0,'L','Ma'),(3,123,'Distrosol37',20253524341,'Pedro','23452451','sdfasf@fssdf.com',1,0,0,'Mi','J'),(4,123,'Distrosol37',20253524341,'Pedro','23452451','sdfasf@fssdf.com',1,0,0,'Mi','J'),(5,12,'Distrosol',20253524341,'Pedro','45234523','fdsgsd@dfgd.com',0,1,0,'Ma','Mi'),(6,9,'distribuidora cuyo',20253524341,'luis','2342422','sfsafas@sdfs.com',1,0,0,'Ma','V'),(7,4321,'diego1',20253524341,'Diego','3532535','dfasdfasf@sdfsf.com',1,0,0,'Ma','V'),(8,876876,'diego211',20263524341,'Manuel','7645876487','jhgjhfg@jhgjhk.com',1,0,0,'L','J');
 /*!40000 ALTER TABLE `proveedores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1010,4 +1009,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-12 11:43:12
+-- Dump completed on 2025-02-25  9:35:36

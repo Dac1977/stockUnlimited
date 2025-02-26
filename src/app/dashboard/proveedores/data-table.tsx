@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   tableId: string // Agregamos el identificador de tabla
 }
-
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTable<TData extends Record<string, any>, TValue>({
   columns,
   data,
