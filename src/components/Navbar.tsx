@@ -11,6 +11,7 @@ const Navbar = () => {
         </div>
         <div className="space-x-4">
           <Link href="/" className="text-gray-300 hover:text-white">Inicio</Link>
+          <Link href="/dashboard/ventas" className="text-gray-300 hover:text-white">Ventas</Link>
           <Link href="/dashboard/productos" className="text-gray-300 hover:text-white">Productos</Link>
           <Link href="/dashboard/proveedores" className="text-gray-300 hover:text-white">Proveedores</Link>
           <Link href="/dashboard/clientes" className="text-gray-300 hover:text-white">Clientes</Link>
